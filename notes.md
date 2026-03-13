@@ -54,3 +54,18 @@ eas login
 cd 
 eas build:configure
 eas build -p android --profile preview
+
+
+## vercel setup
+
+npx expo install react-native-web react-dom @expo/metro-runtime
+npx expo export -p web
+npm install -g vercel
+vercel login
+vercel --prod
+
+
+
+
+npx expo export -p web
+
