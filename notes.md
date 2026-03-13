@@ -37,3 +37,20 @@ DOM Document Object Model
 npx expo install react-dom react-native-web
 npx expo start --tunnel
  npx expo start --lan
+
+
+
+
+
+
+
+## expo app
+npm install @react-native-async-storage/async-storage
+
+
+
+npm install -g eas-cli
+eas login
+cd 
+eas build:configure
+eas build -p android --profile preview
