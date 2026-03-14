@@ -1,15 +1,19 @@
 {
-  "expo": {
+  "expo": 
+  {
     "name": "Smart Home",
     "slug": "expoApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "android": {
+    "android": 
+    {
       "package": "com.abdullah.smarthome",
       "versionCode": 1
     },
-    "extra": {
-      "eas": {
+    "extra": 
+    {
+      "eas": 
+      {
         "projectId": "70709766-58da-4b7b-b5d8-7866f332f7b1"
       }
     }
