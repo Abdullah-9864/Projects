@@ -4,7 +4,6 @@ import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <div>
-  <h1>hello world@</h1>
   <StrictMode>
     <App />
   </StrictMode>

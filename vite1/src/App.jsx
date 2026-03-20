@@ -1,8 +1,10 @@
+import Fun from "./new";
 function App() 
 {
   return(
     <div className="App">
-      <h1>Hello World!</h1>
+      <Fun />
+      <h1>how are you!</h1>
     </div>
   )
 }
