@@ -1,11 +1,33 @@
+function customRender(reactElement,container)
+{
+    const domElement=document.createElement(reactElement.type);
+    domElement.innerHTML=reactElement.children;
+    for (const prop in reactElement.props) 
+    {
+        if (prop === 'children') continue;
+        domElement.setAttribute(prop, reactElement.props[prop]);
+
+    }
+    container.appendChild(domElement);
+
+    // const domElement=document.createElement(reactElement.type);
+    // domElement.innerHTML=reactElement.children;
+    // domElement.setAttribute('href', reactElement.props.href)
+    // domElement.setAttribute('target', reactElement.props.target)
+    // container.appendChild(domElement)
+
+
+}
+
 const reactElement={
-    type:"h1",
-    props:{
+    type:'a',
+    props:
+    {
         
         href:"https://www.google.com",
         target :"_blank"
     },
-    children:"Hello World!",
+    children:"click on this link!",
 }
 
 
@@ -13,17 +35,11 @@ const mainContainer= document.getElementById("root");
 
 
 
-function customRender(reactElement,mainContainer)
-{
-    const domElement=document.createElement(reactElement.type);
-    domElement.innderHTML=reactElement.children;
-    for (const prop in reactElement.props) {
-        if (prop === 'children') continue;
-        domElement.setAttribute(prop, reactElement.props[prop]);
 
-    }
-    mainContainer.appendChild(domElement);
-}
+
+customRender(reactElement,mainContainer)
+
+
 // customRender(reactElement,mainContainer)
 // {
 //     const domElement=document.createElement(reactElement.type);
