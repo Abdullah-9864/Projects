@@ -1,11 +1,11 @@
-import viteLogo from './assets/vite.svg'
+// import viteLogo from './assets/vite.svg'
 import './App.css'
 
 function App() {
   let counter = 4;
   const addValue = () => {
     console.log(counter);
-    counter= counter +1; 
+    // counter= counter +1; 
   };
 
 
