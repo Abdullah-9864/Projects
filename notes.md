@@ -69,3 +69,12 @@ vercel --prod
 
 npx expo export -p web
 
+
+## capacitor
+
+npm install @capacitor/core @capacitor/cli
+npx cap init
+npm run build
+npx cap sync
+npx cap open android
+

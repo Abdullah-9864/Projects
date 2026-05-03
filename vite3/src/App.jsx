@@ -1,32 +1,18 @@
-// function App()
-// {
-//   return "hello world";
-// }
-// export default App;
-
 // import React from 'react'
 
-
-import Card from './components/Card.jsx'
-const App=()=> 
-{
-  const name="Abdullah Shahid"
+const App = () => {
   return (
-    <div>
-      <div>
-        <Card />
+    <div className="parent">
+
+      <div  className="card">
+        <img src="https://images.unsplash.com/photo-1773332585749-5146862ba746?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw1N3x8fGVufDB8fHx8fA%3D%3D" alt="image" />
+        <h1>unsplash images</h1>
+        <p>These are some beautiful images from Unsplash.</p>
+        <button>Learn More</button>
       </div>
-      <div className="card">
-        <h2>Card Title</h2>
-      </div>
-      <div>
-        <p>My name is {name}</p>
-      </div>
-      {/* {card()} */}
+      
     </div>
   )
 }
+
 export default App
-
-
-    //Fragments which is used to wrap multiple elements without adding an extra node to the DOM. It allows us to return multiple elements from a component without the need for a wrapper element like a div. This can help to keep our DOM clean and avoid unnecessary nesting.
