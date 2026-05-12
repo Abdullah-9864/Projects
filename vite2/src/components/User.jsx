@@ -1,12 +1,10 @@
 // import React from 'react'
 
-const User = (props) => {
+const User = (preps) => {
   return (
-    <div style={{color: 'yellow'}}>
-      
-      <h1>{props.name}</h1>
-
-
+    <div>
+      hello {preps.name}
+      hello {preps.name}
     </div>
   )
 }
