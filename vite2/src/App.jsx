@@ -1,25 +1,34 @@
+// function App()
+// {
+//   return "hello";
+// }
+// export default App
+
 import React from 'react'
-// import {BookMark} from 'lucide-react'
-// import { FaBookmark } from 'react-icons/fa'
-import Card from './components/Card'
-import User from './components/User'
+import New from './components/New'
+// import Card from './components/Card'
 
 const App = () => {
-
-  const arr = [1,2,3,4,5];
+  const user='abdullah';
   return (
-    <div className='parent'>
-      {/* <User name="John Doe" />
-      <User name={arr[0]} /> */}
-      {arr.map(function()
-      {
-        return <Card />
-      })}
+    <div>
+      <h1>Our Application is under development. Its a smart home application.</h1>
+      <div className="New">
+        <h1>Abdullah</h1>
+        <h2>{user}</h2>
+        <div>
+          <New/>
+          <New/>
+
+        </div>
 
 
+        {New()}
+
+
+      </div>
     </div>
   )
 }
 
 export default App
-
