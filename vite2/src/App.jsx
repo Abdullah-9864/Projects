@@ -1,13 +1,13 @@
 import React from 'react'
-import New from './components/New'
+import Card from './components/card'
+// import New from './components/New'
+// import Nav from './components/Nav'
 
 const App = () => {
-  const user="abdullah"
   return (
-    <div>
-      <h1>Hello my name is {user}</h1>
-      <h1>I am gonna smash you!</h1>
-      {New()}
+    <div className='parent'>
+      <Card/>
+      <Card/>
 
     </div>
   )

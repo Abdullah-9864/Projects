@@ -1,0 +1,158 @@
+*
+{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'JetBrains Mono', monospace;
+}
+html,body
+{
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  
+} 
+
+
+.parent
+{
+  height: 100vh;
+  width: 100%;
+  background-color: rgb(0, 0, 0);
+  padding-top: 1px; /* prevents margin collapse */
+  display: flex;
+}
+
+
+
+.card {
+  height: 350px;
+  width: 300px;
+  border-radius: 40px;
+  background-color: rgb(181, 148, 3); /* ← this colors the box */
+  margin: 20px;
+  padding:20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+} 
+
+.top img
+{
+  height: 40px;
+  width: 40px;
+  border-radius: 60px;
+  object-fit: cover;
+  margin: 10px;
+  border: 2px solid #dadada;
+  padding: 1px;
+}
+
+
+.top
+{
+  display: flex;
+  align-items: center;  
+  justify-content: space-between;
+
+
+}
+
+.top button
+{
+  display: flex;
+  align-items: center;
+  border: 1px solid #ffffff;
+  background-color: rgb(0, 0, 0);
+  padding: 2px  4px;
+  border-radius: 3px;
+  font-size: 14px; 
+  gap: 3px;
+  color: rgb(255, 255, 255);
+
+}
+
+.top button:hover {
+  background-color: #45a049; /* color when mouse is on it */
+  color: yellow;             /* text color change too if you want */
+}
+
+.bottom
+{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #000000; 
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.center
+{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* background-color: rgb(124, 247, 52); */
+}
+
+.center h3
+{
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.center h3 span
+{
+  font-size: 9px;
+  font-weight: 400;
+  color: rgb(92, 244, 229);
+  /* color: rgb(0, 0, 0); */
+}
+
+.center h2
+{
+  font-size: 22px;
+  font-weight: 600;
+
+  font-family: 'Victor Mono', monospace;
+}
+
+.center .tags
+{
+  display: flex;
+  gap: 15px;
+
+}
+
+.center .tags h4
+{
+  font-size: 15px;
+  padding: 2px 8px; 
+  /* background-color: rgb(0, 0, 0) ; */
+ 
+}
+
+.bottom button
+{
+  display: flex;
+  align-items: center;
+  border: 1px solid #ffffff;
+  background-color: rgb(0, 0, 0);
+  padding: 2px  4px;
+  border-radius: 3px;
+  font-size: 14px; 
+  gap: 3px;
+  color: rgb(255, 255, 255);
+}
+
+.bottom button:hover {
+  background-color: #45a049; /* color when mouse is on it */
+  color: yellow;             /* text color change too if you want */
+}
+
+.bottom p
+{
+  font-size: 11px;
+  color: rgb(92, 244, 229);
+}
