@@ -6,8 +6,10 @@ import Card from './components/card'
 const App = () => {
   return (
     <div className='parent'>
-      <Card/>
-      <Card/>
+      <Card user="abdullah" age={12}/>
+      <Card user="asad" age={13}/>
+      {/* <Card/> */}
+    
 
     </div>
   )
