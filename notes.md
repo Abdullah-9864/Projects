@@ -78,3 +78,6 @@ npm run build
 npx cap sync
 npx cap open android
 
+
+
+eas update --branch preview --message "Fixed light button"
