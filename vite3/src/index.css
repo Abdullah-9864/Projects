@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 *
 {
     margin: 0;
@@ -17,49 +19,4 @@ body
   /* display: flex; */
   /* justify-content: center; */
 
-}
-.parent
-{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  /* flex-wrap: wrap; */
-
-}
-
-.card
-{
-  width: 200px;
-  border: 1px solid black;
-  padding: 20px;
-  margin : 20px;
-  border-radius: 10px;
-  background-color: #000000; 
-
-}
-.card button
-{
-  padding: 10px 20px;
-  background-color: rgb(12, 211, 69);
-  color: black;
-  display: flex;
-  text-align: center;
-  justify-content: center;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.card p
-{
-  margin : 20px 0;
-}
-
-.card img{
-  height: 150px;
-  width: 150px;
-  border-radius: 50%;
-  object-fit: cover;
 }
