@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  StatusBar, SafeAreaView, Animated, Dimensions,
+  StatusBar, SafeAreaView, Animated, Switch, Dimensions, ScrollView,
 } from 'react-native';
 import Paho from 'paho-mqtt';
 
@@ -14,42 +14,88 @@ const TOPIC_CONTROL = 'home/light/control';
 const TOPIC_STATUS  = 'home/light/status';
 const TOPIC_CONN    = 'home/esp32/connection';
 
-// ─── Design Tokens ───────────────────────────────────────────────────────────
-const T = {
-  bg:           '#0B0C0E',
-  bgCard:       '#111316',
-  bgInput:      '#1A1C22',
-  border:       '#222530',
-  borderAccent: '#2E3245',
-  accent:       '#6C63FF',
-  accentDim:    '#3D3870',
-  amber:        '#F5A623',
-  amberDim:     '#7A5010',
-  green:        '#00E676',
-  red:          '#FF1744',
-  orange:       '#FF9100',
-  textPri:      '#F0F2FF',
-  textSec:      '#7B80A0',
-  textMute:     '#3E4260',
+const { width } = Dimensions.get('window');
+
+// ─── Themes ──────────────────────────────────────────────────────────────────
+const DARK = {
+  bg:           '#1A1A1F',
+  bgCard:       '#242429',
+  bgCardAlt:    '#2C2C33',
+  bgInput:      '#32323A',
+  border:       '#3A3A44',
+  borderLight:  '#484854',
+  accent:       '#0078D4',   // Microsoft blue
+  accentLight:  '#2B88D8',
+  accentDim:    '#003A6B',
+  accentGlow:   'rgba(0,120,212,0.2)',
+  amber:        '#FFB900',   // Microsoft gold
+  amberDim:     '#7A5800',
+  amberGlow:    'rgba(255,185,0,0.15)',
+  green:        '#107C10',   // Microsoft green
+  greenLight:   '#55B155',
+  red:          '#D83B01',   // Microsoft red
+  redLight:     '#E87A5C',
+  orange:       '#FF8C00',
+  textPri:      '#FFFFFF',
+  textSec:      '#A8A8B8',
+  textMute:     '#606070',
+  surface:      'rgba(255,255,255,0.04)',
   white:        '#FFFFFF',
 };
 
-// ─── Corner decoration component ─────────────────────────────────────────────
-function Corners({ size = 12, thickness = 1.5, color = T.borderAccent }) {
-  const h = { position: 'absolute', width: size, height: thickness, backgroundColor: color };
-  const v = { position: 'absolute', width: thickness, height: size, backgroundColor: color };
+const LIGHT = {
+  bg:           '#F3F2F1',   // Microsoft light gray
+  bgCard:       '#FFFFFF',
+  bgCardAlt:    '#FAF9F8',
+  bgInput:      '#F3F2F1',
+  border:       '#EDEBE9',
+  borderLight:  '#C8C6C4',
+  accent:       '#0078D4',
+  accentLight:  '#106EBE',
+  accentDim:    '#DEECF9',
+  accentGlow:   'rgba(0,120,212,0.12)',
+  amber:        '#797673',
+  amberDim:     '#FAF9F8',
+  amberGlow:    'rgba(255,185,0,0.1)',
+  green:        '#107C10',
+  greenLight:   '#55B155',
+  red:          '#D83B01',
+  redLight:     '#E87A5C',
+  orange:       '#CA5010',
+  textPri:      '#201F1E',
+  textSec:      '#605E5C',
+  textMute:     '#A19F9D',
+  surface:      'rgba(0,0,0,0.03)',
+  white:        '#FFFFFF',
+};
+
+// ─── Fluent Design Separator ──────────────────────────────────────────────────
+function Separator({ T }) {
+  return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: T.border, marginVertical: 2 }} />;
+}
+
+// ─── Status Badge ─────────────────────────────────────────────────────────────
+function StatusBadge({ label, value, color, T }) {
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <View style={{ ...h, top: 0, left: 0 }} /><View style={{ ...v, top: 0, left: 0 }} />
-      <View style={{ ...h, top: 0, right: 0 }} /><View style={{ ...v, top: 0, right: 0 }} />
-      <View style={{ ...h, bottom: 0, left: 0 }} /><View style={{ ...v, bottom: 0, left: 0 }} />
-      <View style={{ ...h, bottom: 0, right: 0 }} /><View style={{ ...v, bottom: 0, right: 0 }} />
+    <View style={[badge.wrap, { backgroundColor: T.bgCardAlt, borderColor: T.border }]}>
+      <View style={[badge.dot, { backgroundColor: color }]} />
+      <View>
+        <Text style={[badge.label, { color: T.textMute }]}>{label}</Text>
+        <Text style={[badge.val, { color: T.textPri }]}>{value}</Text>
+      </View>
     </View>
   );
 }
+const badge = StyleSheet.create({
+  wrap:  { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, borderWidth: 1, borderRadius: 6, padding: 12 },
+  dot:   { width: 8, height: 8, borderRadius: 4 },
+  label: { fontSize: 10, fontWeight: '600', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 2 },
+  val:   { fontSize: 12, fontWeight: '700', letterSpacing: 0.3 },
+});
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function App() {
+  const [isDark,        setIsDark]        = useState(true);
   const [lightState,    setLightState]    = useState('OFF');
   const [mqttStatus,    setMqttStatus]    = useState('CONNECTING');
   const [mqttOk,        setMqttOk]        = useState(false);
@@ -57,22 +103,43 @@ export default function App() {
   const [isESP32Online, setIsESP32Online] = useState(false);
   const [isMqttReady,   setIsMqttReady]   = useState(false);
   const [clock,         setClock]         = useState('--:--');
-  const [pktCount,      setPktCount]      = useState(0);
+  const [date,          setDate]          = useState('');
 
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const clientRef = useRef(null);
-  const reconnRef = useRef(null);
+  const T = isDark ? DARK : LIGHT;
 
+  const pulseAnim  = useRef(new Animated.Value(1)).current;
+  const fadeAnim   = useRef(new Animated.Value(0)).current;
+  const themeAnim  = useRef(new Animated.Value(1)).current;
+  const clientRef  = useRef(null);
+  const reconnRef  = useRef(null);
+
+  // Clock
   useEffect(() => {
     const tick = () => {
       const n = new Date();
       setClock(`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`);
+      setDate(n.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
     };
     tick();
     const id = setInterval(tick, 10000);
     return () => clearInterval(id);
   }, []);
 
+  // Fade in on mount
+  useEffect(() => {
+    Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+  }, []);
+
+  // Theme transition
+  const toggleTheme = () => {
+    Animated.sequence([
+      Animated.timing(themeAnim, { toValue: 0.92, duration: 100, useNativeDriver: true }),
+      Animated.timing(themeAnim, { toValue: 1,    duration: 200, useNativeDriver: true }),
+    ]).start();
+    setIsDark(d => !d);
+  };
+
+  // MQTT
   useEffect(() => {
     connectMQTT();
     return () => {
@@ -81,12 +148,13 @@ export default function App() {
     };
   }, []);
 
+  // Bulb pulse
   useEffect(() => {
     if (lightState === 'ON' && isESP32Online) {
       Animated.loop(
         Animated.sequence([
-          Animated.timing(pulseAnim, { toValue: 1.07, duration: 900, useNativeDriver: true }),
-          Animated.timing(pulseAnim, { toValue: 1.00, duration: 900, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1.06, duration: 1000, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1.00, duration: 1000, useNativeDriver: true }),
         ])
       ).start();
     } else {
@@ -94,13 +162,6 @@ export default function App() {
       pulseAnim.setValue(1);
     }
   }, [lightState, isESP32Online]);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      if (isMqttReady) setPktCount(c => (c + Math.floor(Math.random() * 3 + 1)) % 10000);
-    }, 1800);
-    return () => clearInterval(id);
-  }, [isMqttReady]);
 
   function connectMQTT() {
     const id = 'rn-' + Math.random().toString(16).substr(2, 8);
@@ -143,291 +204,360 @@ export default function App() {
   const canControl = isMqttReady && isESP32Online;
   const isOn       = lightState === 'ON' && isESP32Online;
 
+  const s = makeStyles(T);
+
   return (
     <SafeAreaView style={s.safe}>
-      <StatusBar barStyle="light-content" backgroundColor={T.bg} />
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={T.bg}
+      />
+      <Animated.View style={[s.root, { opacity: fadeAnim, transform: [{ scale: themeAnim }] }]}>
+        <ScrollView
+          style={s.scroll}
+          contentContainerStyle={s.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
 
-      {/* Horizontal grid lines background */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        {Array.from({ length: 24 }).map((_, i) => (
-          <View key={i} style={s.gridLine} />
-        ))}
-      </View>
-
-      <View style={s.container}>
-
-        {/* Top bar */}
-        <View style={s.topBar}>
-          <View style={s.topBarLeft}>
-            <View style={[s.dot, { backgroundColor: mqttOk ? T.green : T.orange }]} />
-            <Text style={s.mono10mute}>SYS:LIGHT_CTL</Text>
+          {/* ── Top Navigation Bar ── */}
+          <View style={s.navbar}>
+            <View style={s.navLeft}>
+              <View style={[s.appIcon, { backgroundColor: T.accent }]}>
+                <Text style={s.appIconText}>⚡</Text>
+              </View>
+              <View>
+                <Text style={[s.appName, { color: T.textPri }]}>Light Control</Text>
+                <Text style={[s.appSub, { color: T.textMute }]}>Smart Home</Text>
+              </View>
+            </View>
+            <TouchableOpacity style={[s.themeBtn, { backgroundColor: T.bgCardAlt, borderColor: T.border }]} onPress={toggleTheme}>
+              <Text style={s.themeBtnIcon}>{isDark ? '☀️' : '🌙'}</Text>
+            </TouchableOpacity>
           </View>
-          <Text style={s.monoClk}>{clock}</Text>
-          <View style={s.versionTag}>
-            <Text style={s.mono9mute}>v2.4.1</Text>
-          </View>
-        </View>
 
-        {/* Title */}
-        <View style={s.titleBlock}>
-          <Text style={s.titleMain}>SMART{'\n'}LIGHT</Text>
-          <View style={s.titleRight}>
-            <Text style={s.titleSub}>CONTROL UNIT</Text>
-            <Text style={s.titleSub}>LIVING ROOM</Text>
-            <View style={s.titleTagRow}>
-              <View style={[s.tag, { borderColor: isOn ? T.amber : T.borderAccent }]}>
-                <Text style={[s.tagText, { color: isOn ? T.amber : T.textMute }]}>
+          {/* ── Hero Card ── */}
+          <View style={[s.heroCard, {
+            backgroundColor: isOn ? T.accent : T.bgCard,
+            borderColor: isOn ? T.accentLight : T.border,
+          }]}>
+            {/* Ambient glow effect */}
+            {isOn && (
+              <View style={[s.heroGlow, { backgroundColor: T.accentGlow }]} />
+            )}
+
+            <View style={s.heroTop}>
+              <View>
+                <Text style={[s.heroLabel, { color: isOn ? 'rgba(255,255,255,0.7)' : T.textMute }]}>
+                  LIVING ROOM
+                </Text>
+                <Text style={[s.heroRoom, { color: isOn ? T.white : T.textPri }]}>
+                  Ceiling Light
+                </Text>
+              </View>
+              <View style={[s.heroBadge, {
+                backgroundColor: isOn ? 'rgba(255,255,255,0.2)' : T.bgInput,
+                borderColor: isOn ? 'rgba(255,255,255,0.3)' : T.border,
+              }]}>
+                <View style={[s.heroBadgeDot, { backgroundColor: isOn ? T.white : T.textMute }]} />
+                <Text style={[s.heroBadgeText, { color: isOn ? T.white : T.textMute }]}>
                   {isOn ? 'ACTIVE' : 'STANDBY'}
                 </Text>
               </View>
             </View>
-          </View>
-        </View>
 
-        {/* Hero panel */}
-        <View style={[s.heroPanel, isOn && { borderColor: T.amberDim, backgroundColor: '#120E06' }]}>
-          <Corners size={14} thickness={2} color={isOn ? T.amber : T.borderAccent} />
-
-          <View style={s.heroInner}>
-            {/* Bulb */}
-            <View style={s.bulbCol}>
-              <Animated.Text style={[s.bulbEmoji, !isOn && { opacity: 0.25 }, { transform: [{ scale: pulseAnim }] }]}>
+            <View style={s.heroCenter}>
+              <Animated.Text style={[
+                s.bulb,
+                { transform: [{ scale: pulseAnim }], opacity: isOn ? 1 : 0.35 }
+              ]}>
                 💡
               </Animated.Text>
-              <Text style={[s.bulbState, { color: isOn ? T.amber : T.textMute }]}>
-                {isOn ? '● ON' : '○ OFF'}
+              <Text style={[s.heroStateText, { color: isOn ? T.white : T.textSec }]}>
+                {isESP32Online ? (isOn ? 'Light is On' : 'Light is Off') : 'Device Offline'}
               </Text>
             </View>
 
-            {/* Readout table */}
-            <View style={s.readout}>
+            <View style={s.heroBottom}>
+              <Text style={[s.heroTime, { color: isOn ? 'rgba(255,255,255,0.7)' : T.textMute }]}>
+                {date}
+              </Text>
+              <Text style={[s.heroClock, { color: isOn ? T.white : T.textPri }]}>
+                {clock}
+              </Text>
+            </View>
+          </View>
+
+          {/* ── Power Controls ── */}
+          <View style={[s.section, { backgroundColor: T.bgCard, borderColor: T.border }]}>
+            <Text style={[s.sectionTitle, { color: T.textMute }]}>POWER</Text>
+
+            <View style={s.powerRow}>
+              {/* ON Button */}
+              <TouchableOpacity
+                style={[s.powerBtn, {
+                  backgroundColor: isOn ? T.accent : T.bgInput,
+                  borderColor: isOn ? T.accent : T.border,
+                  flex: 1,
+                }, !canControl && s.btnDisabled]}
+                onPress={() => sendCommand('ON')}
+                disabled={!canControl}
+                activeOpacity={0.75}
+              >
+                <Text style={[s.powerBtnIcon, { color: isOn ? T.white : T.textSec }]}>◑</Text>
+                <Text style={[s.powerBtnLabel, { color: isOn ? T.white : T.textSec }]}>Turn On</Text>
+                {isOn && <View style={[s.powerBtnCheck]} >
+                  <Text style={{ color: T.white, fontSize: 10 }}>✓</Text>
+                </View>}
+              </TouchableOpacity>
+
+              {/* OFF Button */}
+              <TouchableOpacity
+                style={[s.powerBtn, {
+                  backgroundColor: !isOn ? T.bgCardAlt : T.bgInput,
+                  borderColor: !isOn ? T.borderLight : T.border,
+                  flex: 1,
+                }, !canControl && s.btnDisabled]}
+                onPress={() => sendCommand('OFF')}
+                disabled={!canControl}
+                activeOpacity={0.75}
+              >
+                <Text style={[s.powerBtnIcon, { color: !isOn ? T.textPri : T.textMute }]}>◐</Text>
+                <Text style={[s.powerBtnLabel, { color: !isOn ? T.textPri : T.textMute }]}>Turn Off</Text>
+                {!isOn && <View style={[s.powerBtnCheck, { backgroundColor: T.bgInput, borderColor: T.border }]} >
+                  <Text style={{ color: T.textSec, fontSize: 10 }}>✓</Text>
+                </View>}
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* ── Scene Presets ── */}
+          <View style={[s.section, { backgroundColor: T.bgCard, borderColor: T.border }]}>
+            <Text style={[s.sectionTitle, { color: T.textMute }]}>SCENES</Text>
+            <View style={s.scenesGrid}>
               {[
-                { label: 'STATE',  val: lightState,   color: isOn ? T.amber : T.textSec },
-                { label: 'DEVICE', val: esp32Status,   color: isESP32Online ? T.green : T.red },
-                { label: 'BROKER', val: mqttStatus,    color: mqttOk ? T.green : T.orange },
-                { label: 'PKT_RX', val: String(pktCount).padStart(4,'0'), color: T.accent },
-              ].map((row, i) => (
-                <View key={i}>
-                  <View style={s.readoutRow}>
-                    <Text style={s.readoutLabel}>{row.label}</Text>
-                    <Text style={[s.readoutVal, { color: row.color }]}>{row.val}</Text>
-                  </View>
-                  {i < 3 && <View style={s.readoutDivider} />}
-                </View>
+                { id: '01', label: 'Relax',   sub: 'Warm ambient',  cmd: 'ON',  icon: '🌅' },
+                { id: '02', label: 'Focus',   sub: 'Bright & clear', cmd: 'ON',  icon: '💼' },
+                { id: '03', label: 'Night',   sub: 'Lights out',    cmd: 'OFF', icon: '🌙' },
+              ].map(sc => (
+                <TouchableOpacity
+                  key={sc.id}
+                  style={[s.sceneCard, {
+                    backgroundColor: T.bgCardAlt,
+                    borderColor: T.border,
+                  }, !canControl && s.btnDisabled]}
+                  onPress={() => sendCommand(sc.cmd)}
+                  disabled={!canControl}
+                  activeOpacity={0.7}
+                >
+                  <Text style={s.sceneEmoji}>{sc.icon}</Text>
+                  <Text style={[s.sceneLabel, { color: T.textPri }]}>{sc.label}</Text>
+                  <Text style={[s.sceneSub, { color: T.textMute }]}>{sc.sub}</Text>
+                </TouchableOpacity>
               ))}
             </View>
           </View>
-        </View>
 
-        {/* Warning strip */}
-        {(!isMqttReady || !isESP32Online) && (
-          <View style={[s.warningStrip, { borderColor: !isMqttReady ? T.orange : T.red }]}>
-            <View style={[s.dot, { backgroundColor: !isMqttReady ? T.orange : T.red }]} />
-            <Text style={[s.mono9, { color: !isMqttReady ? T.orange : T.red, flex: 1 }]}>
-              {!isMqttReady ? 'CONNECTING TO BROKER — PLEASE WAIT' : 'ESP32 OFFLINE — AWAITING RECONNECT'}
-            </Text>
+          {/* ── Connection Status ── */}
+          <View style={[s.section, { backgroundColor: T.bgCard, borderColor: T.border }]}>
+            <Text style={[s.sectionTitle, { color: T.textMute }]}>CONNECTION</Text>
+
+            {/* Warning */}
+            {(!isMqttReady || !isESP32Online) && (
+              <View style={[s.alert, {
+                backgroundColor: !isMqttReady ? 'rgba(202,80,16,0.1)' : 'rgba(216,59,1,0.1)',
+                borderColor: !isMqttReady ? T.orange : T.red,
+              }]}>
+                <Text style={{ fontSize: 14 }}>⚠️</Text>
+                <Text style={[s.alertText, { color: !isMqttReady ? T.orange : T.red }]}>
+                  {!isMqttReady ? 'Connecting to broker...' : 'ESP32 is offline. Controls disabled.'}
+                </Text>
+              </View>
+            )}
+
+            <View style={s.statusRow}>
+              <StatusBadge
+                label="Broker"
+                value={mqttStatus}
+                color={mqttOk ? T.greenLight : T.orange}
+                T={T}
+              />
+              <StatusBadge
+                label="ESP32"
+                value={esp32Status}
+                color={isESP32Online ? T.greenLight : T.red}
+                T={T}
+              />
+            </View>
           </View>
-        )}
 
-        {/* ON / OFF buttons */}
-        <View style={s.ctrlRow}>
-          <TouchableOpacity
-            style={[s.ctrlBtn, isOn && { borderColor: T.amberDim, backgroundColor: '#130E05' }, !canControl && s.disabled]}
-            onPress={() => sendCommand('ON')}
-            disabled={!canControl}
-            activeOpacity={0.7}
-          >
-            <Corners size={8} thickness={1.5} color={isOn ? T.amber : T.borderAccent} />
-            <Text style={[s.ctrlIcon, { color: isOn ? T.amber : T.textMute }]}>◑</Text>
-            <Text style={[s.ctrlLabel, { color: isOn ? T.amber : T.textSec }]}>POWER ON</Text>
-            {isOn && <View style={[s.activeBar, { backgroundColor: T.amber }]} />}
-          </TouchableOpacity>
+          {/* ── Settings ── */}
+          <View style={[s.section, { backgroundColor: T.bgCard, borderColor: T.border }]}>
+            <Text style={[s.sectionTitle, { color: T.textMute }]}>SETTINGS</Text>
 
-          <TouchableOpacity
-            style={[s.ctrlBtn, !isOn && { borderColor: T.accentDim, backgroundColor: '#0D0B1E' }, !canControl && s.disabled]}
-            onPress={() => sendCommand('OFF')}
-            disabled={!canControl}
-            activeOpacity={0.7}
-          >
-            <Corners size={8} thickness={1.5} color={!isOn ? T.accent : T.borderAccent} />
-            <Text style={[s.ctrlIcon, { color: !isOn ? T.accent : T.textMute }]}>◐</Text>
-            <Text style={[s.ctrlLabel, { color: !isOn ? T.accent : T.textSec }]}>POWER OFF</Text>
-            {!isOn && <View style={[s.activeBar, { backgroundColor: T.accent }]} />}
-          </TouchableOpacity>
-        </View>
+            <View style={s.settingRow}>
+              <View style={s.settingLeft}>
+                <Text style={[s.settingIcon]}>
+                  {isDark ? '🌙' : '☀️'}
+                </Text>
+                <View>
+                  <Text style={[s.settingLabel, { color: T.textPri }]}>
+                    {isDark ? 'Dark Mode' : 'Light Mode'}
+                  </Text>
+                  <Text style={[s.settingSub, { color: T.textMute }]}>
+                    Microsoft Fluent theme
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={isDark}
+                onValueChange={toggleTheme}
+                trackColor={{ false: T.border, true: T.accent }}
+                thumbColor={T.white}
+              />
+            </View>
 
-        {/* Scene presets */}
-        <View style={s.dividerRow}>
-          <View style={s.dividerLine} />
-          <Text style={s.mono9mute}>SCENE PRESETS</Text>
-          <View style={s.dividerLine} />
-        </View>
+            <Separator T={T} />
 
-        <View style={s.scenesRow}>
-          {[
-            { id: '01', label: 'RELAX',  sub: 'Warm mode', cmd: 'ON',  icon: '▣' },
-            { id: '02', label: 'FOCUS',  sub: 'Full bright', cmd: 'ON', icon: '◈' },
-            { id: '03', label: 'NIGHT',  sub: 'Lights out', cmd: 'OFF', icon: '◉' },
-          ].map(sc => (
-            <TouchableOpacity
-              key={sc.id}
-              style={[s.sceneBtn, !canControl && s.disabled]}
-              onPress={() => sendCommand(sc.cmd)}
-              disabled={!canControl}
-              activeOpacity={0.7}
-            >
-              <Corners size={7} thickness={1} color={T.borderAccent} />
-              <Text style={s.sceneId}>{sc.id}</Text>
-              <Text style={[s.sceneIcon, { color: T.accent }]}>{sc.icon}</Text>
-              <Text style={s.sceneName}>{sc.label}</Text>
-              <Text style={s.sceneSub}>{sc.sub}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+            <View style={s.settingRow}>
+              <View style={s.settingLeft}>
+                <Text style={s.settingIcon}>📡</Text>
+                <View>
+                  <Text style={[s.settingLabel, { color: T.textPri }]}>Broker</Text>
+                  <Text style={[s.settingSub, { color: T.textMute }]} numberOfLines={1}>
+                    {BROKER.substr(0, 28)}…
+                  </Text>
+                </View>
+              </View>
+              <View style={[s.connDot, { backgroundColor: mqttOk ? T.greenLight : T.orange }]} />
+            </View>
 
-        {/* Footer */}
-        <View style={s.footer}>
-          <Text style={s.mono8mute}>ESP32  ·  HIVEMQ  ·  MQTT/TLS</Text>
-          <Text style={s.mono8mute}>[ {BROKER.substr(0, 22)}… ]</Text>
-        </View>
+            <Separator T={T} />
 
-      </View>
+            <View style={s.settingRow}>
+              <View style={s.settingLeft}>
+                <Text style={s.settingIcon}>🔒</Text>
+                <View>
+                  <Text style={[s.settingLabel, { color: T.textPri }]}>Encryption</Text>
+                  <Text style={[s.settingSub, { color: T.textMute }]}>MQTT over TLS/SSL</Text>
+                </View>
+              </View>
+              <Text style={[s.settingBadge, { color: T.accent, backgroundColor: T.accentDim }]}>
+                SECURED
+              </Text>
+            </View>
+          </View>
+
+          <Text style={[s.footerNote, { color: T.textMute }]}>
+            Smart Home · ESP32 · HiveMQ Cloud
+          </Text>
+
+        </ScrollView>
+      </Animated.View>
     </SafeAreaView>
   );
 }
 
-// ─── Styles ──────────────────────────────────────────────────────────────────
-const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: T.bg },
+// ─── Dynamic Styles ───────────────────────────────────────────────────────────
+function makeStyles(T) {
+  return StyleSheet.create({
+    safe:   { flex: 1, backgroundColor: T.bg },
+    root:   { flex: 1, backgroundColor: T.bg },
+    scroll: { flex: 1 },
+    scrollContent: { padding: 16, gap: 12, paddingBottom: 32 },
 
-  gridLine: {
-    flex: 1,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(34,37,48,0.6)',
-  },
+    // Navbar
+    navbar: {
+      flexDirection: 'row', alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 4, paddingVertical: 4,
+    },
+    navLeft:      { flexDirection: 'row', alignItems: 'center', gap: 12 },
+    appIcon:      { width: 36, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+    appIconText:  { fontSize: 18 },
+    appName:      { fontSize: 16, fontWeight: '700', letterSpacing: 0.2 },
+    appSub:       { fontSize: 11, fontWeight: '500', letterSpacing: 0.3, marginTop: 1 },
+    themeBtn:     { width: 38, height: 38, borderRadius: 8, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+    themeBtnIcon: { fontSize: 18 },
 
-  container: {
-    flex: 1,
-    paddingHorizontal: 18,
-    paddingTop: 8,
-    paddingBottom: 10,
-  },
+    // Hero card
+    heroCard: {
+      borderRadius: 12, borderWidth: 1,
+      padding: 20, marginBottom: 4,
+      overflow: 'hidden', position: 'relative',
+      minHeight: 200,
+    },
+    heroGlow: {
+      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+      opacity: 0.3,
+    },
+    heroTop:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, zIndex: 1 },
+    heroLabel:  { fontSize: 10, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 3 },
+    heroRoom:   { fontSize: 22, fontWeight: '700', letterSpacing: -0.3 },
+    heroBadge:  { flexDirection: 'row', alignItems: 'center', gap: 5, borderWidth: 1, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+    heroBadgeDot: { width: 5, height: 5, borderRadius: 2.5 },
+    heroBadgeText: { fontSize: 9, fontWeight: '700', letterSpacing: 1 },
+    heroCenter: { alignItems: 'center', paddingVertical: 8, zIndex: 1 },
+    bulb:       { fontSize: 64, marginBottom: 8 },
+    heroStateText: { fontSize: 14, fontWeight: '600', letterSpacing: 0.2 },
+    heroBottom: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 16, zIndex: 1 },
+    heroTime:   { fontSize: 11, fontWeight: '500', letterSpacing: 0.3 },
+    heroClock:  { fontSize: 22, fontWeight: '700', letterSpacing: 1 },
 
-  // Top bar
-  topBar: {
-    flexDirection: 'row', alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: 12, marginBottom: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: T.border,
-  },
-  topBarLeft: { flexDirection: 'row', alignItems: 'center', gap: 7 },
-  dot: { width: 6, height: 6, borderRadius: 3 },
-  mono10mute: { fontSize: 10, fontWeight: '700', color: T.textSec, letterSpacing: 1.5, fontFamily: 'monospace' },
-  monoClk:    { fontSize: 15, fontWeight: '700', color: T.textPri, letterSpacing: 3,   fontFamily: 'monospace' },
-  versionTag: {
-    borderWidth: StyleSheet.hairlineWidth, borderColor: T.border,
-    borderRadius: 3, paddingHorizontal: 7, paddingVertical: 3,
-  },
-  mono9mute:  { fontSize: 9, fontWeight: '700', color: T.textMute, letterSpacing: 1.5, fontFamily: 'monospace' },
-  mono9:      { fontSize: 9, fontWeight: '700', letterSpacing: 1.5, fontFamily: 'monospace' },
-  mono8mute:  { fontSize: 8, fontWeight: '600', color: T.textMute, letterSpacing: 1.5, fontFamily: 'monospace' },
+    // Section
+    section: {
+      borderRadius: 12, borderWidth: 1,
+      padding: 16, gap: 12,
+    },
+    sectionTitle: { fontSize: 10, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase' },
 
-  // Title
-  titleBlock: {
-    flexDirection: 'row', alignItems: 'flex-start',
-    justifyContent: 'space-between', marginBottom: 14,
-  },
-  titleMain: {
-    fontSize: 38, fontWeight: '800', color: T.textPri,
-    letterSpacing: 5, fontFamily: 'monospace', lineHeight: 42,
-  },
-  titleRight: { alignItems: 'flex-end', justifyContent: 'flex-end', gap: 4, paddingTop: 4 },
-  titleSub: { fontSize: 9, fontWeight: '700', color: T.textMute, letterSpacing: 2, fontFamily: 'monospace' },
-  titleTagRow: { marginTop: 4 },
-  tag: {
-    borderWidth: 1, borderRadius: 3,
-    paddingHorizontal: 8, paddingVertical: 3,
-  },
-  tagText: { fontSize: 9, fontWeight: '800', letterSpacing: 1.5, fontFamily: 'monospace' },
+    // Power buttons
+    powerRow: { flexDirection: 'row', gap: 10 },
+    powerBtn: {
+      borderRadius: 8, borderWidth: 1,
+      paddingVertical: 16, alignItems: 'center',
+      gap: 6, position: 'relative',
+    },
+    powerBtnIcon:  { fontSize: 22 },
+    powerBtnLabel: { fontSize: 13, fontWeight: '700', letterSpacing: 0.3 },
+    powerBtnCheck: {
+      position: 'absolute', top: 8, right: 8,
+      width: 18, height: 18, borderRadius: 9,
+      backgroundColor: 'rgba(255,255,255,0.25)',
+      alignItems: 'center', justifyContent: 'center',
+    },
+    btnDisabled: { opacity: 0.35 },
 
-  // Hero panel
-  heroPanel: {
-    backgroundColor: T.bgCard,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: T.border,
-    borderRadius: 4,
-    padding: 16, marginBottom: 10,
-    overflow: 'hidden', position: 'relative',
-  },
-  heroInner: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+    // Scenes
+    scenesGrid: { flexDirection: 'row', gap: 8 },
+    sceneCard:  {
+      flex: 1, borderRadius: 8, borderWidth: 1,
+      padding: 12, alignItems: 'center', gap: 6,
+    },
+    sceneEmoji: { fontSize: 24 },
+    sceneLabel: { fontSize: 12, fontWeight: '700', letterSpacing: 0.2 },
+    sceneSub:   { fontSize: 9, fontWeight: '500', textAlign: 'center', letterSpacing: 0.2 },
 
-  bulbCol: {
-    alignItems: 'center', gap: 8,
-    paddingRight: 14,
-    borderRightWidth: StyleSheet.hairlineWidth,
-    borderRightColor: T.border,
-  },
-  bulbEmoji: { fontSize: 50 },
-  bulbState: { fontSize: 10, fontWeight: '800', letterSpacing: 2, fontFamily: 'monospace' },
+    // Alert
+    alert: {
+      flexDirection: 'row', alignItems: 'center', gap: 10,
+      borderWidth: 1, borderRadius: 6,
+      paddingHorizontal: 12, paddingVertical: 10,
+    },
+    alertText: { fontSize: 12, fontWeight: '600', flex: 1, lineHeight: 16 },
 
-  readout: { flex: 1 },
-  readoutRow: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', paddingVertical: 6,
-  },
-  readoutDivider: { height: StyleSheet.hairlineWidth, backgroundColor: T.border },
-  readoutLabel: { fontSize: 9, fontWeight: '700', color: T.textMute, letterSpacing: 1.5, fontFamily: 'monospace' },
-  readoutVal:   { fontSize: 11, fontWeight: '700', letterSpacing: 1, fontFamily: 'monospace' },
+    // Status row
+    statusRow: { flexDirection: 'row', gap: 10 },
 
-  // Warning
-  warningStrip: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: '#130A00',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 3, paddingHorizontal: 12,
-    paddingVertical: 8, marginBottom: 10,
-  },
+    // Settings
+    settingRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4 },
+    settingLeft:  { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
+    settingIcon:  { fontSize: 20, width: 28, textAlign: 'center' },
+    settingLabel: { fontSize: 14, fontWeight: '600', letterSpacing: 0.1 },
+    settingSub:   { fontSize: 11, fontWeight: '400', marginTop: 2, letterSpacing: 0.1 },
+    connDot:      { width: 10, height: 10, borderRadius: 5 },
+    settingBadge: { fontSize: 9, fontWeight: '700', letterSpacing: 1, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 },
 
-  // Controls
-  ctrlRow: { flexDirection: 'row', gap: 10, marginBottom: 14 },
-  ctrlBtn: {
-    flex: 1, backgroundColor: T.bgCard,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: T.border, borderRadius: 4,
-    paddingVertical: 20, alignItems: 'center',
-    gap: 6, overflow: 'hidden', position: 'relative',
-  },
-  disabled: { opacity: 0.3 },
-  ctrlIcon:  { fontSize: 24 },
-  ctrlLabel: { fontSize: 11, fontWeight: '800', letterSpacing: 2, fontFamily: 'monospace' },
-  activeBar: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 2 },
-
-  // Presets
-  dividerRow: {
-    flexDirection: 'row', alignItems: 'center',
-    gap: 10, marginBottom: 10,
-  },
-  dividerLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: T.border },
-
-  scenesRow: { flexDirection: 'row', gap: 10, marginBottom: 14 },
-  sceneBtn: {
-    flex: 1, backgroundColor: T.bgCard,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: T.border, borderRadius: 4,
-    padding: 12, alignItems: 'center',
-    gap: 4, position: 'relative', overflow: 'hidden',
-  },
-  sceneId:   { position: 'absolute', top: 6, left: 8, fontSize: 8, color: T.textMute, fontFamily: 'monospace', fontWeight: '700' },
-  sceneIcon: { fontSize: 18, marginTop: 8 },
-  sceneName: { fontSize: 10, fontWeight: '800', color: T.textPri, letterSpacing: 1.5, fontFamily: 'monospace' },
-  sceneSub:  { fontSize: 8, color: T.textMute, fontFamily: 'monospace', letterSpacing: 0.5 },
-
-  // Footer
-  footer: {
-    alignItems: 'center', gap: 3, marginTop: 'auto',
-    paddingTop: 10,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: T.border,
-  },
-});
+    // Footer
+    footerNote: { fontSize: 11, textAlign: 'center', marginTop: 4, letterSpacing: 0.5 },
+  });
+}
