@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+
+    <title>Burrak</title>
+</head>
+
+<body>
+    <header class="flex justify-between px-10 py-4 border-b border-gray-200">
+        <!-- Logo -->
+        <div class="text-xl font-bold text-blue-800">Burrak</div>
+
+        <!-- navigation -->
+        <nav class="mt-5 flex gap-12 text-sm text-gray-600">
+            <a href="#" class="hover:text-blue-500">Buy</a>
+            <a href="#" class="hover:text-blue-500">Sell</a>
+            <a href="#" class="hover:text-blue-500">Dealers</a>
+            <a href="#" class="hover:text-blue-500">Compare</a>
+        </nav>
+
+        <!-- Login -->
+
+        <div>
+            <button class="px-4 py-1 text-sm border border-gray-300 rounded-md hover:bg-blue-100">Login</button>
+            <button class="px-4 py-1 text-sm border border-gray-300 rounded-md hover:bg-blue-100">Sell your car</button>
+        </div>
+
+
+
+    </header>
+
+
+    <!-- Hero section -->
+
+
+
+    <section class="bg-gray-50 px-10 py-16 text-center">
+        <h1 style="font-family: 'Anton', sans-serif;" class="text-3xl text-blue-400 mb-3">
+            Find your next car
+        </h1>
+
+        <p class="mb-8 text-gray-600">Search thousands of listings from trusted sellers and dealers</p>
+
+
+        <div
+            class="max-w-3xl mx-auto 9border border-gray-200  shadow-sm rounded-md p-4 bg-white grid grid-cols-5 gap-3">
+
+
+            <select class="col-span-1 border border-gray-300 rounded-md px-3 py-1 text-sm text-gray-700" name="make"
+                id="make">
+                <option value="">Make</option>
+                <option value="Toyota">Toyota</option>
+            </select>
+            <select class="col-span-1 border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700" name="model"
+                id="model">
+                <option value="">Model</option>
+                <option value="corolla">Corolla</option>
+            </select>
+            <select class="col-span-1 border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700" name="city"
+                id="city">
+                <option value="">City</option>
+                <option value="faisalabad">Faisalabad</option>
+            </select>
+            <select class="col-span-1 border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700"
+                name="price range" id="price range">
+                <option value="">Price</option>
+                <option value="5 million - 7 million">5 million - 7 million</option>
+            </select>
+
+
+            <button
+                class="col-span-1 bg-blue-600 text-white rounded-md px-4 py-2 text-sm font-medium hover:bg-blue-700">Search</button>
+
+        </div>
+
+    </section>
+
+
+    <!-- category shortcuts -->
+
+
+    <section class="px-10 py-10">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">
+            Browse by category
+        </h2>
+        <div class="grid grid-cols-5 gap-4">
+            <div
+                class="border border-gray-200 rounded-lg py-6 flex flex-col items-center justify-center hover:border-blue-500 gap-2 hover:bg-blue-50 cursor-pointer transition">
+                Sedan</div>
+            <div
+                class="border border-gray-200 rounded-lg py-6 flex flex-col items-center justify-center hover:border-blue-500 gap-2 hover:bg-blue-50 cursor-pointer transition">
+                SUV</div>
+            <div
+                class="border border-gray-200 rounded-lg py-6 flex flex-col items-center justify-center hover:border-blue-500 gap-2 hover:bg-blue-50 cursor-pointer transition">
+                Hatchback</div>
+            <div
+                class="border border-gray-200 rounded-lg py-6 flex flex-col items-center justify-center hover:border-blue-500 gap-2 hover:bg-blue-50 cursor-pointer transition">
+                Truck</div>
+            <div
+                class="border border-gray-200 rounded-lg py-6 flex flex-col items-center justify-center hover:border-blue-500 gap-2 hover:bg-blue-50 cursor-pointer transition">
+                More</div>
+        </div>
+    </section>
+
+
+
+    <!-- listing card -->
+
+
+
+    <section class="px-10 py-10">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-medium text-gray-900">Featured listings</h2>
+            <a href="#" class="text-sm text-blue-600 hover:underline">View all →</a>
+        </div>
+
+
+        <!-- card -->
+
+        <div class="grid grid-cols-3 gap-6">
+            <!-- 1 -->
+            <div
+                class="flex flex-col justify-between border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition cursor-pointer bg-gray-100">
+                <div class="flex justify-center">
+                    <img src="corolla.png" alt="Car" />
+                </div>
+                <div class="p-4">
+                    <h3 class="text-sm font-medium text-gray-900 mb-1">Toyota Corolla 2020</h3>
+                    <p class="text-xs text-gray-500 mb-2">Lahore &middot; 45,000 km &middot; Automatic</p>
+                    <p class="text-base font-semibold text-gray-900">PKR 4,850,000</p>
+                </div>
+            </div>
+
+            <!-- 2 -->
+
+            <div
+                class="flex flex-col justify-between border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition cursor-pointer bg-gray-100">
+                <div class="flex justify-center">
+                    <img src="civic.png" alt="Car" />
+                </div>
+                <div class="p-4">
+                    <h3 class="text-sm font-medium text-gray-900 mb-1">Honda Civic 2024</h3>
+                    <p class="text-xs text-gray-500 mb-2">Lahore &middot; 45,000 km &middot; Automatic</p>
+                    <p class="text-base font-semibold text-gray-900">PKR 4,850,000</p>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </section>
+
+
+    <!-- Trust signals row -->
+
+
+    <section class="bg-gray-50 px-10 py-12">
+
+        <div class="grid grid-cols-3 gap-8 max-w-4xl mx-auto text-center">
+
+            <div>
+                <h3 class="text-sm font-medium text-gray-900 mb-1">Verified sellers</h3>
+                <p class="text-xs text-gray-500">Every dealer is checked before they can list</p>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-medium text-gray-900 mb-1">Free price check</h3>
+                <p class="text-xs text-gray-500">Know if you're getting a fair deal instantly</p>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-medium text-gray-900 mb-1">Dealer directory</h3>
+                <p class="text-xs text-gray-500">Browse trusted dealers near you</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- footer -->
+     
+
+
+
+    <footer class="border-t border-gray-200 px-10 py-8">
+
+        <div class="grid grid-cols-4 gap-8 mb-6">
+
+            <div>
+                <h4 class="text-sm font-medium text-gray-900 mb-2">Burrak</h4>
+                <p class="text-xs text-gray-500">Buy and sell cars with confidence.</p>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-medium text-gray-900 mb-2">Company</h4>
+                <ul class="text-xs text-gray-500 space-y-1">
+                    <li><a href="#" class="hover:text-gray-900">About</a></li>
+                    <li><a href="#" class="hover:text-gray-900">Contact</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-medium text-gray-900 mb-2">Legal</h4>
+                <ul class="text-xs text-gray-500 space-y-1">
+                    <li><a href="#" class="hover:text-gray-900">Terms</a></li>
+                    <li><a href="#" class="hover:text-gray-900">Privacy</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-medium text-gray-900 mb-2">Cities</h4>
+                <ul class="text-xs text-gray-500 space-y-1">
+                    <li><a href="#" class="hover:text-gray-900">Lahore</a></li>
+                    <li><a href="#" class="hover:text-gray-900">Karachi</a></li>
+                    <li><a href="#" class="hover:text-gray-900">Islamabad</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="text-xs text-gray-400 border-t border-gray-100 pt-4">
+            &copy; 2026 Burrak. All rights reserved.
+        </div>
+
+    </footer>
+
+
+
+</body>
+
+</html>
