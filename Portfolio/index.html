@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Name — Resume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar__inner">
+      <a href="#top" class="navbar__logo">portfolio<span>.</span></a>
+      <nav class="navbar__links" id="navLinks">
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="navbar__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero__text">
+      <p class="hero__eyebrow">FullStack Developer</p>
+      <h1>Abdullah Shahid</h1>
+      <p class="hero__tagline">Full stack developer building responsive, accessible web applications end to end.</p>
+      <div class="hero__cta">
+        <a href="#projects" class="btn btn--primary">See my work</a>
+        <a href="#contact" class="btn btn--ghost">Get in touch</a>
+      </div>
+    </div>
+    <div class="hero__visual" aria-hidden="true">
+      <div class="hero__frame hero__frame--desktop"></div>
+      <div class="hero__frame hero__frame--tablet"></div>
+      <div class="hero__frame hero__frame--mobile"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <h2 class="section-title">About</h2>
+    <p class="about__text">
+      I'm a developer focused on building responsive, accessible web interfaces using HTML, CSS, and JavaScript. I enjoy
+      solving layout problems — making a single design work cleanly across phone, tablet, and desktop screens without
+      cutting corners. I'm currently expanding into React, Express, and Tailwind CSS, and looking for an internship
+      where I can learn from an experienced team while contributing to real projects.</p>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="skills" id="skills">
+    <h2 class="section-title">Skills</h2>
+    <div class="skills__grid">
+      <div class="skill-card">
+        <h3>HTML / CSS</h3>
+        <p>Semantic markup, responsive layouts, Flexbox &amp; Grid.</p>
+      </div>
+      <div class="skill-card">
+        <h3>JavaScript</h3>
+        <p>DOM manipulation, fetch/APIs, ES6+.</p>
+      </div>
+      <div class="skill-card">
+        <h3>Tooling</h3>
+        <p>Git, npm, basic build tools.</p>
+      </div>
+      <div class="skill-card">
+        <h3>Design</h3>
+        <p>Typography, layout systems, accessibility basics.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="projects" id="projects">
+    <h2 class="section-title">Projects</h2>
+    <div class="projects__grid">
+      <article class="project-card">
+        <div class="project-card__thumb"></div>
+        <h3>Project One</h3>
+        <p>Burrak — a car buy/sell marketplace with search & filter, built with a shared backend across web and mobile.</p>
+        <a href="https://burrak.gt.tc/" class="project-card__link">View project →</a>
+      </article>
+      <article class="project-card">
+        <div class="project-card__thumb"></div>
+        <h3>Project Two</h3>
+        <p>Short description of what it does and the stack you used.</p>
+        <a href="#" class="project-card__link">View project →</a>
+      </article>
+      <article class="project-card">
+        <div class="project-card__thumb"></div>
+        <h3>Project Three</h3>
+        <p>Short description of what it does and the stack you used.</p>
+        <a href="#" class="project-card__link">View project →</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- CONTACT / FOOTER -->
+  <footer class="footer" id="contact">
+    <h2 class="section-title">Let's talk</h2>
+    <p class="footer__text">Open to new roles and freelance work. Reach out any time.</p>
+    <div class="footer__links">
+      <a href="mailto:you@example.com">abdullahshahid9864@gmail.com</a>
+      <a href="https://github.com/Abdullah-9864/">GitHub</a>
+      <a
+        href="https://www.linkedin.com/in/abdullahshahid9864/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BzgUEyRARQvGf%2FWCaRYJJkw%3D%3D">LinkedIn</a>
+    </div>
+    <p class="footer__copy">© 2026 Your Name.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102a27">
+  <title>Machine Learning | Learning Roadmap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { ink: '#102a27', mist: '#f7f8f2', lime: '#d8f064', coral: '#ff8f6b', moss: '#315b51' },
+          boxShadow: { roadmap: '0 20px 50px rgba(19, 52, 46, .08)' }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="min-w-[320px] bg-mist font-sans text-ink antialiased">
+  <header class="mx-auto w-[min(1180px,calc(100%-40px))] py-[22px] max-md:w-[calc(100%-28px)]">
+    <nav class="flex items-center justify-between gap-6" aria-label="Main navigation">
+      <a class="inline-flex items-center gap-3 text-[1.1rem] font-extrabold tracking-[-.04em]" href="#top" aria-label="ML Roadmap home">
+        <span class="grid h-[29px] w-[29px] place-items-center rounded-[9px] border border-ink/15 bg-lime text-[.78rem]">ML</span>
+        ML Roadmap
+      </a>
+      <div class="flex items-center gap-7 text-[.9rem] font-semibold text-ink/65 max-md:gap-3">
+        <a class="transition hover:text-ink max-md:hidden" href="#roadmap">Roadmap</a>
+        <a class="transition hover:text-ink max-md:hidden" href="#principles">Learning path</a>
+        <a class="rounded-full border border-ink/15 px-4 py-2.5 text-ink transition hover:bg-ink hover:text-mist" href="#roadmap">Start learning</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="relative overflow-hidden py-[76px] pb-[88px] max-md:py-[54px] max-md:pb-[62px]">
+      <div class="pointer-events-none absolute -right-[90px] -top-[90px] h-[300px] w-[300px] rounded-full bg-lime opacity-90 max-md:-right-[75px] max-md:-top-[55px] max-md:h-[175px] max-md:w-[175px]"></div>
+      <div class="pointer-events-none absolute bottom-[18px] left-[5%] h-[130px] w-[130px] rounded-full bg-coral opacity-80 max-md:-left-6 max-md:h-20 max-md:w-20"></div>
+      <div class="relative mx-auto grid w-[min(1180px,calc(100%-40px))] grid-cols-[1.25fr_.75fr] items-end gap-14 max-md:w-[calc(100%-28px)] max-md:grid-cols-1 max-md:gap-6">
+        <div>
+          <p class="mb-5 inline-flex items-center gap-2 text-[.76rem] font-extrabold uppercase tracking-[.12em] text-moss before:h-2 before:w-2 before:rounded-full before:bg-coral before:content-['']">Your learning journey</p>
+          <h1 class="max-w-[720px] text-[clamp(3rem,7vw,6.3rem)] font-extrabold leading-[.91] tracking-[-.075em]">From curious<br>to <em>capable.</em></h1>
+        </div>
+        <p class="max-w-[410px] pb-2 text-[1.1rem] leading-[1.65] text-ink/65 max-md:text-base">A practical route through the ideas, tools, and projects that shape modern machine learning. <strong class="text-ink">Learn in order,</strong> then make it your own.</p>
+      </div>
+    </section>
+
+    <section class="mx-auto w-[min(1180px,calc(100%-40px))] pb-16 max-md:w-[calc(100%-28px)]" id="roadmap" aria-label="Machine learning roadmap">
+      <div class="overflow-hidden rounded-[22px] border border-ink/15 bg-white shadow-roadmap">
+        <div class="flex items-center justify-between gap-5 border-b border-ink/15 px-[22px] py-[18px] max-md:px-4 max-md:py-[15px]">
+          <span class="flex items-center gap-3 text-[.86rem] font-bold"><span class="h-[9px] w-[9px] rounded-full bg-[#70bf72] shadow-[0_0_0_4px_#e5f5e3]" aria-hidden="true"></span>Interactive learning roadmap</span>
+          <a class="text-right text-[.83rem] font-bold text-moss transition hover:text-ink" href="https://roadmap.sh/r/embed?id=696fcd9372acf1058a73acbb" target="_blank" rel="noopener noreferrer">Open in a new tab ↗</a>
+        </div>
+        <div class="h-[min(74vh,760px)] min-h-[520px] bg-white max-md:h-[70vh]"><iframe class="block h-full w-full border-0" src="https://roadmap.sh/r/embed?id=696fcd9372acf1058a73acbb" title="Machine learning learning roadmap" loading="lazy"></iframe></div>
+      </div>
+    </section>
+
+    <section class="mx-auto mb-[76px] grid w-[min(1180px,calc(100%-40px))] grid-cols-3 gap-px overflow-hidden rounded-[18px] border border-ink/15 bg-ink/15 max-md:mb-[46px] max-md:w-[calc(100%-28px)] max-md:grid-cols-1" id="principles" aria-label="Learning principles">
+      <article class="min-h-40 bg-mist p-[27px] max-md:min-h-0 max-md:p-[22px]"><span class="mb-7 block text-[.75rem] font-extrabold tracking-[.1em] text-moss/70 max-md:mb-[17px]">01</span><h2 class="mb-[7px] text-[1.08rem] font-bold tracking-[-.03em]">Build the foundations</h2><p class="m-0 text-[.9rem] leading-normal text-ink/65">Start with Python, mathematics, and the habits of working with data.</p></article>
+      <article class="min-h-40 bg-mist p-[27px] max-md:min-h-0 max-md:p-[22px]"><span class="mb-7 block text-[.75rem] font-extrabold tracking-[.1em] text-moss/70 max-md:mb-[17px]">02</span><h2 class="mb-[7px] text-[1.08rem] font-bold tracking-[-.03em]">Learn by making</h2><p class="m-0 text-[.9rem] leading-normal text-ink/65">Turn every concept into a small experiment, notebook, or useful project.</p></article>
+      <article class="min-h-40 bg-mist p-[27px] max-md:min-h-0 max-md:p-[22px]"><span class="mb-7 block text-[.75rem] font-extrabold tracking-[.1em] text-moss/70 max-md:mb-[17px]">03</span><h2 class="mb-[7px] text-[1.08rem] font-bold tracking-[-.03em]">Keep following signals</h2><p class="m-0 text-[.9rem] leading-normal text-ink/65">Use this map to focus your next step without losing sight of the bigger picture.</p></article>
+    </section>
+  </main>
+
+  <footer class="border-t border-ink/15 py-[26px] pb-[34px] text-[.82rem] text-ink/65">
+    <div class="mx-auto flex w-[min(1180px,calc(100%-40px))] justify-between gap-6 max-md:w-[calc(100%-28px)] max-md:flex-col max-md:gap-[7px]"><span>© 2026 ML Roadmap</span><span>Learn the models. Build the future.</span></div>
+  </footer>
+</body>
+</html>
